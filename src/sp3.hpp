@@ -62,7 +62,7 @@ public:
   /// @return -1: EOF encountered
   ///          0: All ok
   ///         >0: ERROR
-  int get_next_data_block(SatelliteId satid, Sp3DataBlock &block) noexcept;
+  int get_next_data_block(sp3::SatelliteId satid, Sp3DataBlock &block) noexcept;
 
   /// @brief Check if a given SV in included in the Sp3 (i.e. is included in
   ///        the instance's sat_vec__ member).
@@ -73,7 +73,8 @@ public:
   ///            (aka a 3-char id, as'G01', 'R27', etc)
   /// @return True if satellite is included in the instance's sat_vec__; false
   ///         otherwise.
-  bool has_sv(SatelliteId satid) const noexcept {
+  bool has_sv(sp3::SatelliteId satid) const noexcept {
+    using sp3::SatelliteId;
     return std::find_if(sat_vec__.cbegin(), sat_vec__.cend(),
                         [satid](const SatelliteId &s) { return s == satid; }) !=
            sat_vec__.cend();
@@ -86,12 +87,12 @@ public:
   int num_sats() const noexcept { return sat_vec__.size(); }
 
   /// @brief Return the vector of satellites included in the sp3 file
-  std::vector<SatelliteId> sattellite_vector() const noexcept {
+  std::vector<sp3::SatelliteId> sattellite_vector() const noexcept {
     return sat_vec__;
   }
   
   /// @brief Return the vector of satellites included in the sp3 file
-  std::vector<SatelliteId>& sattellite_vector() noexcept {
+  std::vector<sp3::SatelliteId>& sattellite_vector() noexcept {
     return sat_vec__;
   }
 
@@ -107,16 +108,16 @@ private:
   int resolve_epoch_line(ngpt::datetime<ngpt::microseconds> &t) noexcept;
 
   /// @brief Get and resolve the next Position and Clock Record
-  int get_next_position(SatelliteId &sat, double &xkm, double &ykm, double &zkm,
+  int get_next_position(sp3::SatelliteId &sat, double &xkm, double &ykm, double &zkm,
                         double &clk, double &xstdv, double &ystdv,
                         double &zstdv, double &cstdv, Sp3Flag &flag,
-                        const SatelliteId *wsat = nullptr) noexcept;
+                        const sp3::SatelliteId *wsat = nullptr) noexcept;
 
   /// @brief Get and resolve the next Velocity and ClockRate-of-Change Record
-  int get_next_velocity(SatelliteId &sat, double &xkm, double &ykm, double &zkm,
+  int get_next_velocity(sp3::SatelliteId &sat, double &xkm, double &ykm, double &zkm,
                         double &clk, double &xstdv, double &ystdv,
                         double &zstdv, double &cstdv, Sp3Flag &flag,
-                        const SatelliteId *wsat = nullptr) noexcept;
+                        const sp3::SatelliteId *wsat = nullptr) noexcept;
 
   std::string __filename;  ///< The name of the file
   std::ifstream __istream; ///< The infput (file) stream
@@ -131,7 +132,7 @@ private:
   ngpt::microseconds interval__; ///< Epoch interval
   // SATELLITE_SYSTEM __satsys;     ///< satellite system
   pos_type __end_of_head;             ///< Mark the 'END OF HEADER' field
-  std::vector<SatelliteId> sat_vec__; ///< Vector of satellite id's
+  std::vector<sp3::SatelliteId> sat_vec__; ///< Vector of satellite id's
   double fpb_pos__, ///< floating point base for position std. dev (mm or 10**-4
                     ///< mm/sec)
       fpb_clk__;    ///< floating point base for clock std. dev (psec or 10**-4

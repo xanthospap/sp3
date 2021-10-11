@@ -6,6 +6,8 @@
 #include <iostream>
 #endif
 
+using dso::sp3::SatelliteId;
+
 /// Max record characters (for a navigation data block)
 constexpr int MAX_RECORD_CHARS{128};
 

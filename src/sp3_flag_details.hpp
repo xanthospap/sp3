@@ -6,7 +6,7 @@
 
 namespace dso {
 
-namespace sp3_details {
+namespace sp3 {
 /// @brief Underlying type for Sp3Event Enum class
 using uitype = uint_fast16_t;
 
@@ -18,11 +18,11 @@ struct Sp3FlagWrapper {
   uitype bits_{0};
 }; // Sp3FlagWrapper
 
-} // sp3_details
+} // sp3
 
 /// @enum Sp3Event Describe an event that can be recorded in an Sp3 file
 ///       A record may be marked with multiple (or none) Sp3Event's
-enum class Sp3Event : sp3_details::uitype {
+enum class Sp3Event : sp3::uitype {
   /// Bad or absent positional values are to be set to 0.000000
   bad_abscent_position = 0,
   
@@ -80,8 +80,8 @@ enum class Sp3Event : sp3_details::uitype {
   has_clk_rate_stdev
 }; // Sp3Event
 
-static_assert(std::numeric_limits<sp3_details::uitype>::digits >
-              static_cast<sp3_details::uitype>(Sp3Event::has_clk_rate_stdev));
+static_assert(std::numeric_limits<sp3::uitype>::digits >
+              static_cast<sp3::uitype>(Sp3Event::has_clk_rate_stdev));
 
 /// @brief set two events (aka turn them 'on') in a Sp3FlagWrapper
 /// @param[in] e1 Event to turn 'on' aka set
@@ -95,7 +95,7 @@ static_assert(std::numeric_limits<sp3_details::uitype>::digits >
 ///          Sp3Event::clock_event|Sp3Event::has_clk_rate_stdev);
 /// This here is a first step ....
 /// @see  Sp3FlagWrapper operator|(Sp3FlagWrapper e1, Sp3Event e2)
-sp3_details::Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2) noexcept;
+sp3::Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2) noexcept;
 
 /// @brief Concatenate an Sp3FlagWrapper and an Sp3Event.
 /// The function will copy the input Sp3FlagWrapper and set on the
@@ -110,7 +110,7 @@ sp3_details::Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2) noexcept;
 ///          Sp3Event::clock_event|Sp3Event::has_clk_rate_stdev);
 /// This here is the final step ....
 /// @see Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2)
-sp3_details::Sp3FlagWrapper operator|(sp3_details::Sp3FlagWrapper e1,
+sp3::Sp3FlagWrapper operator|(sp3::Sp3FlagWrapper e1,
                                           Sp3Event e2) noexcept;
 
 }// dso

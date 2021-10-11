@@ -3,6 +3,7 @@
 #include <cstdio>
 
 using namespace dso;
+using dso::sp3::SatelliteId;
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {

@@ -9,12 +9,12 @@ namespace dso {
 /// @class Sp3Flag A flag to hold all events recorded in the Sp3 for a field
 struct Sp3Flag {
   /// Initialize unmarked
-  sp3_details::uitype bits_{0};
+  sp3::uitype bits_{0};
   
   /// @brief Mark flag with an Sp3Event (aka, set the Sp3Event)
   /// @param[in] e The Sp3Event to turn on (aka set)
   void set(Sp3Event e) noexcept {
-    bits_ |= (1 << static_cast<sp3_details::uitype>(e));
+    bits_ |= (1 << static_cast<sp3::uitype>(e));
   }
   
   /// @brief Enable bitwise multiple Sp3Event's set.
@@ -29,11 +29,11 @@ struct Sp3Flag {
   ///                     Sp3Event::clock_event);
   ///            will call this function because the input parameters will
   ///            result in a Sp3FlagWrapper instance.
-  void set(sp3_details::Sp3FlagWrapper wf) noexcept { bits_ = wf.bits_; }
+  void set(sp3::Sp3FlagWrapper wf) noexcept { bits_ = wf.bits_; }
   
   /// @brief Un-Mark flag with an Sp3Event (aka, unset the Sp3Event)
   void clear(Sp3Event e) noexcept {
-    bits_ &= (~(1 << static_cast<sp3_details::uitype>(e)));
+    bits_ &= (~(1 << static_cast<sp3::uitype>(e)));
   }
   
   /// @brief Clear all Sp3Event's and reset flag to empty/clean
@@ -41,7 +41,7 @@ struct Sp3Flag {
   
   /// @brief Trigger, aka check if an Sp3Event is set
   bool is_set(Sp3Event e) const noexcept {
-    return ((bits_ >> static_cast<sp3_details::uitype>(e)) & 1);
+    return ((bits_ >> static_cast<sp3::uitype>(e)) & 1);
   }
   
   /// @brief Check if Sp3Flag is clean (no Sp3Event is set)

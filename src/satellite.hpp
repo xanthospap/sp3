@@ -3,7 +3,7 @@
 
 #include "ggdatetime/dtcalendar.hpp"
 
-namespace dso {
+namespace dso::sp3 {
 
 /// @brief Number of characters used to describe a given sattelite vehicle
 constexpr int SAT_ID_CHARS = 3;
