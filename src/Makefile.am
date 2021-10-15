@@ -31,7 +31,8 @@ pkginclude_HEADERS = \
   sp3_flag_details.hpp \
   sp3flag.hpp \
   satellite.hpp \
-  sp3.hpp
+  sp3.hpp \
+  sv_interpolate.hpp
 
 ##
 ##  Source files (distributed).
@@ -40,4 +41,5 @@ pkginclude_HEADERS = \
 dist_libcppsp3_la_SOURCES = \
   sp3flag.cpp \
   sp3_read_header.cpp \
-  sp3.cpp
+  sp3.cpp \
+  neville_interp.cpp

@@ -17,7 +17,7 @@ namespace dso {
 /// Instances of this class, hold Sp3 data records for one block (aka one
 /// epoch) and one satellite.
 struct Sp3DataBlock {
-  ngpt::datetime<ngpt::microseconds> t;
+  dso::datetime<dso::microseconds> t;
   double state[8];      ///< [ X, Y, Z, clk, Vx, Vy, Vz, Vc ]
   double state_sdev[8]; ///< following state__
   Sp3Flag flag;         ///< flag for state
@@ -52,6 +52,12 @@ public:
       std::is_nothrow_move_assignable<std::ifstream>::value) = default;
 
   auto interval() const noexcept { return interval__; }
+
+  auto num_epochs() const noexcept { return num_epochs__; }
+
+  auto start_epoch() const noexcept { return start_epoch__; }
+
+  void rewind() noexcept { __istream.seekg(__end_of_head, std::ios::beg); }
 
   /// @brief Read the next data block and parse holding for a given SV
   /// @param[in] satid The SV to collect records for
@@ -105,7 +111,7 @@ private:
   int read_header() noexcept;
 
   /// @brief Resolve an Epoch Header Record line
-  int resolve_epoch_line(ngpt::datetime<ngpt::microseconds> &t) noexcept;
+  int resolve_epoch_line(dso::datetime<dso::microseconds> &t) noexcept;
 
   /// @brief Get and resolve the next Position and Clock Record
   int get_next_position(sp3::SatelliteId &sat, double &xkm, double &ykm, double &zkm,
@@ -122,14 +128,14 @@ private:
   std::string __filename;  ///< The name of the file
   std::ifstream __istream; ///< The infput (file) stream
   char version__;          ///< the version 'c' or 'd'
-  ngpt::datetime<ngpt::microseconds> start_epoch__; ///< Start epoch
+  dso::datetime<dso::microseconds> start_epoch__; ///< Start epoch
   int num_epochs__,              ///< Number of epochs in file
       num_sats__;                ///< Number od SVs in file
   char crd_sys__[6] = {'\0'},    ///< Coordinate system (last char always '\0')
       orb_type__[4] = {'\0'},    ///< Orbit type (last char always '\0')
       agency__[5] = {'\0'},      ///< Agency (last char always '\0')
       time_sys__[4] = {'\0'};    ///< Time system (last char always '\0')
-  ngpt::microseconds interval__; ///< Epoch interval
+  dso::microseconds interval__; ///< Epoch interval
   // SATELLITE_SYSTEM __satsys;     ///< satellite system
   pos_type __end_of_head;             ///< Mark the 'END OF HEADER' field
   std::vector<sp3::SatelliteId> sat_vec__; ///< Vector of satellite id's

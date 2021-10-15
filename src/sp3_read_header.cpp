@@ -68,10 +68,10 @@ int dso::Sp3c::read_header() noexcept {
   std::memcpy(agency__, line + 56, 4);
 
   // all done for first line, construct the reference date
-  start_epoch__ = ngpt::datetime<ngpt::microseconds>(
-      ngpt::year(year), ngpt::month(month), ngpt::day_of_month(dom),
-      ngpt::hours(hour), ngpt::minutes(minute),
-      ngpt::microseconds(static_cast<long>(sec * 1e6)));
+  start_epoch__ = dso::datetime<dso::microseconds>(
+      dso::year(year), dso::month(month), dso::day_of_month(dom),
+      dso::hours(hour), dso::minutes(minute),
+      dso::microseconds(static_cast<long>(sec * 1e6)));
 
   // Read the second line. Error codes [20,30)
   // ------------------------------------------------------------
@@ -85,14 +85,14 @@ int dso::Sp3c::read_header() noexcept {
   }
   sec = std::strtod(line + 8, &str_end);
   // validate start epoch (#1)
-  ngpt::microseconds sw;
+  dso::microseconds sw;
   auto gwk1 = start_epoch__.as_gps_wsow(sw);
   if (gwk1.as_underlying_type() != gwk || sw.to_fractional_seconds() != sec) {
     fprintf(stderr, "[ERROR][%15s] Failed to validate start date", __func__);
     return 22;
   }
   sec = std::strtod(line + 24, &str_end);
-  interval__ = ngpt::microseconds(static_cast<long>(sec * 1e6));
+  interval__ = dso::microseconds(static_cast<long>(sec * 1e6));
   int mjd = std::strtol(line + 39, &str_end, 10);
   if (!mjd || errno == ERANGE) {
     errno = 0;

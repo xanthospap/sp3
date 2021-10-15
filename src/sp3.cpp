@@ -32,7 +32,7 @@ bool substr_is_empty(const char *str, std::size_t count) noexcept {
 /// @param[out] t The epoch resolved from the input line
 /// @return Anything other than 0 denotes an error
 int dso::Sp3c::resolve_epoch_line(
-    ngpt::datetime<ngpt::microseconds> &t) noexcept {
+    dso::datetime<dso::microseconds> &t) noexcept {
   char line[MAX_RECORD_CHARS];
   char *end;
   const char *start;
@@ -62,10 +62,10 @@ int dso::Sp3c::resolve_epoch_line(
     return 11;
   }
 
-  t = ngpt::datetime<ngpt::microseconds>(
-      ngpt::year(date[0]), ngpt::month(date[1]), ngpt::day_of_month(date[2]),
-      ngpt::hours(date[3]), ngpt::minutes(date[4]),
-      ngpt::microseconds(static_cast<long>(fsec * 1e6)));
+  t = dso::datetime<dso::microseconds>(
+      dso::year(date[0]), dso::month(date[1]), dso::day_of_month(date[2]),
+      dso::hours(date[3]), dso::minutes(date[4]),
+      dso::microseconds(static_cast<long>(fsec * 1e6)));
 
   return 0;
 }
@@ -424,7 +424,7 @@ int dso::Sp3c::get_next_data_block(SatelliteId satid,
 void dso::Sp3c::print_members() const noexcept {
   std::cout << "\nfilename     :" << __filename
             << "\nVersion      :" << version__
-            << "\nStart Epoch  :" << ngpt::strftime_ymd_hms(start_epoch__)
+            << "\nStart Epoch  :" << dso::strftime_ymd_hms(start_epoch__)
             << "\n# Epochs     :" << num_epochs__
             << "\nCoordinate S :" << crd_sys__
             << "\nOrbit Type   :" << orb_type__
