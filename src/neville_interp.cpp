@@ -42,6 +42,9 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
   c = (cws == nullptr) ? new double[mm] : cws;
   d = (dws == nullptr) ? new double[mm] : dws;
 
+#ifdef DEBUG
+int max_index = 0;
+#endif
   int ns = 0;
   double difx;
   double dif = std::abs(x - xpts[0]);
@@ -53,6 +56,9 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
       dif = difx;
     }
     c[i] = d[i] = ypts[i];
+    #ifdef DEBUG
+    if (i>max_index) max_index = i;
+    #endif
   }
 
   // initial approximation for y
@@ -78,10 +84,14 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
           delete[] c;
         if (dws == nullptr)
           delete[] d;
+        return 5;
       }
       den = w / den;
       d[i] = hp * den;
       c[i] = ho * den;
+      #ifdef DEBUG
+      if (i+m>max_index) max_index = i+m;
+      #endif
     }
     // After each column in the tableau is completed, we decide which
     // correction, c or d, we want to add to our accumulating value of y, i.e.,
@@ -92,5 +102,8 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
     // possible) on the target x.The last dy added is thus the error indication.
     y += (dy = (2 * (ns + 1) < (mm - m) ? c[ns + 1] : d[ns--]));
   }
+  #ifdef DEBUG
+  printf(">> %s Max index used: %d\n", __func__, max_index);
+  #endif
   return 0;
 }
