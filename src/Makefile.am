@@ -9,19 +9,19 @@ lib_LTLIBRARIES = libcppsp3.la
 ## ----------------------------------------------------
 ##
 libcppsp3_la_CXXFLAGS = \
--std=c++17 \
--g \
--pg \
--Wall \
--Wextra \
--Werror \
--pedantic \
--W \
--Wshadow \
--Winline \
--Wdisabled-optimization \
--march=native \
--DDEBUG
+    -std=c++17 \
+    -g \
+    -pg \
+    -Wall \
+    -Wextra \
+    -Werror \
+    -pedantic \
+    -W \
+    -Wshadow \
+    -Winline \
+    -O2 \
+    -march=native \
+    -DDEBUG
 
 ##
 ##  Header files (distributed) installed in /$(includedir)/$(package name).
@@ -42,4 +42,5 @@ dist_libcppsp3_la_SOURCES = \
   sp3flag.cpp \
   sp3_read_header.cpp \
   sp3.cpp \
-  neville_interp.cpp
+  neville_interp.cpp \
+  sv_interpolate.cpp

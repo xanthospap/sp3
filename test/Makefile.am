@@ -11,7 +11,7 @@ MCXXFLAGS = \
   -pedantic \
   -W \
   -Wshadow \
-  -Wdisabled-optimization \
+  -O2 \
   -march=native \
   -DDEBUG
 
