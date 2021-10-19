@@ -20,32 +20,40 @@ int neville_interpolation3(double t, double *estimates, double *destimates,
                            const double *__restrict__ yy,
                            const double *__restrict__ zz, int array_size,
                            int mm, int from_index, double *workspace) noexcept;
-} // namespace sp3
-
-constexpr dso::datetime_interval<dso::microseconds> MAX_MICROSEC_{
-    dso::modified_julian_day(0),
-    dso::microseconds{60 * 60 * 2 * 1'000'000L}}; // 1 hours
+} // sp3
 
 constexpr int MIN_INTERPOLATION_PTS = 4;
 
 class SvInterpolator {
 private:
-  sp3::SatelliteId svid; ///< SV to interpolate
-  int num_dpts{0}; ///< num of data points (blocks) available for SV; read from Sp3
-  Sp3c *sp3{nullptr};///< Sp3 instance providing data values
-  Sp3DataBlock *data{nullptr}; ///< data points/blocks to be collected from the Sp3
-  int last_index{0};           ///< last index of data used in the interpolation
-  double *txyz{nullptr}, ///< time, x, y and z data arrays used in interpolation
-  *workspace{nullptr}; ///< workspace arena (allocate once) used in interpolation
+  /// SV to interpolate
+  sp3::SatelliteId svid;
+  /// num of data points (blocks) available for SV; read from Sp3
+  int num_dpts{0};
+  /// Sp3 instance providing data values
+  Sp3c *sp3{nullptr};
+  /// last index of data used in the interpolation
+  int last_index{0};
+  /// interval to use in interpolation, aka use points up to max_millisec away 
+  /// from requested epoch to perform the interpolation
+  dso::milliseconds max_millisec {60 * 60 * 2 * 1'000L};
+  /// minimum number of points on each side to perform interpolation
+  int min_dpts_on_each_side {4};
+  /// data points/blocks to be collected from the Sp3
+  Sp3DataBlock *data{nullptr};
+  /// time, x, y and z data arrays used in interpolation
+  double *txyz{nullptr};
+  /// workspace arena (allocate once) used in interpolation
+  double *workspace{nullptr};
 
   /// @brief Compute workspace arena size
   /// This function will compute the maximum number of data points to be used
-  /// in the interpolation, based on the options available (aka MAX_MICROSEC_)
+  /// in the interpolation, based on the options available (aka max_millisec)
   /// and the data interval of the Sp3.
-  /// We are considering points up to MAX_MICROSEC_ on the right and points
-  /// up to MAX_MICROSEC_ on the left.
+  /// We are considering points up to max_millisec on the right and points
+  /// up to max_millisec on the left.
   /// @return Maximum number of points around a central point, with time tags
-  ///         less than MAX_MICROSEC_ apart
+  ///         less than max_millisec apart
   int compute_workspace_size() noexcept;
 
   /// @brief fill in the data array using an sp3 instance (aka collect SV blocks
@@ -56,13 +64,23 @@ private:
   ///        bloc[i].t <= t < block[i+1].t
   ///        Try to make an educated guess...
   int index_hunt(const dso::datetime<dso::microseconds> &t) noexcept {
+
+    // quick .....
+    if (last_index < num_dpts-2) {
+      if (data[last_index].t <= t && data[last_index+1].t > t) {
+        return last_index;
+      } else if (data[last_index+1].t <= t && data[last_index+2].t > t) {
+        return (++last_index);
+      }
+    }
+
     int start_index = (data[last_index].t <= t) ? last_index : 0;
     auto it = std::lower_bound(
         data+start_index, data + num_dpts, t,
         [](const Sp3DataBlock &block, const dso::datetime<dso::microseconds>& tt) {
         return block.t < tt;
         });
-    return static_cast<int>(it-data);
+    return (last_index=static_cast<int>(it-data));
   }
 
 public:

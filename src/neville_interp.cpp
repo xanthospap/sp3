@@ -37,14 +37,11 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
     return 1;
   }
 
-  // Allocate workspace
+  // Allocate workspace if needed
   double *c, *d;
   c = (cws == nullptr) ? new double[mm] : cws;
   d = (dws == nullptr) ? new double[mm] : dws;
 
-//#ifdef DEBUG
-//int max_index = 0;
-//#endif
   int ns = 0;
   double difx;
   double dif = std::abs(x - xpts[0]);
@@ -56,9 +53,6 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
       dif = difx;
     }
     c[i] = d[i] = ypts[i];
-    //#ifdef DEBUG
-    //if (i>max_index) max_index = i;
-    //#endif
   }
 
   // initial approximation for y
@@ -89,9 +83,6 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
       den = w / den;
       d[i] = hp * den;
       c[i] = ho * den;
-      //#ifdef DEBUG
-      //if (i+m>max_index) max_index = i+m;
-      //#endif
     }
     // After each column in the tableau is completed, we decide which
     // correction, c or d, we want to add to our accumulating value of y, i.e.,
@@ -102,23 +93,25 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
     // possible) on the target x.The last dy added is thus the error indication.
     y += (dy = (2 * (ns + 1) < (mm - m) ? c[ns + 1] : d[ns--]));
   }
-  //#ifdef DEBUG
-  //printf(">> %s Max index used: %d\n", __func__, max_index);
-  //#endif
   return 0;
 }
 
-int dso::sp3::neville_interpolation3(double t, double *estimates, double *destimates,
-                          const double *__restrict__ tt, const double *__restrict__ xx,const double *__restrict__ yy, const double *__restrict__ zz,
-                          int array_size, int mm, int from_index, double *workspace
-                          ) noexcept {
+/// @brief Neville interpolation for three componenents, adjusted to performing 
+///        interpolation on one x point but for several distinct arrays. This is
+///        ment e.g. to interpolate a time-point for (x,y,z) coordinates
+int dso::sp3::neville_interpolation3(
+    double t, double *estimates, double *destimates,
+    const double *__restrict__ tt, const double *__restrict__ xx,
+    const double *__restrict__ yy, const double *__restrict__ zz,
+    int array_size, int mm, int from_index, double *workspace) noexcept {
 
   const double *__restrict__ tpts = tt + from_index;
   const double *__restrict__ xpts = xx + from_index;
   const double *__restrict__ ypts = yy + from_index;
   const double *__restrict__ zpts = zz + from_index;
 
-  if (from_index + mm > array_size) {
+  if (from_index + mm > array_size)
+  {
     fprintf(stderr,
             "[ERROR] Not enough data points to perform interpolation "
             "(traceback: %s)\n",
@@ -128,30 +121,34 @@ int dso::sp3::neville_interpolation3(double t, double *estimates, double *destim
 
   // Allocate workspace
   double *cx = workspace;
-  double *dx = workspace + array_size; 
-  double *cy = workspace + 2*array_size; 
-  double *dy = workspace + 3*array_size; 
-  double *cz = workspace + 3*array_size; 
-  double *dz = workspace + 4*array_size; 
+  double *dx = workspace + array_size;
+  double *cy = workspace + 2 * array_size;
+  double *dy = workspace + 3 * array_size;
+  double *cz = workspace + 3 * array_size;
+  double *dz = workspace + 4 * array_size;
 
-  int nsx =0, nsy = 0, nsz = 0;
+  int nsx = 0, nsy = 0, nsz = 0;
   double dift;
   double dif = std::abs(t - tpts[0]);
   // ﬁnd the index ns of the closest table entry and initialize the tableau of
   // c’s and d’s
-  for (int i = 0; i < mm; i++) {
-    if ((dift = std::abs(t - tpts[i])) < dif) {
+  for (int i = 0; i < mm; i++)
+  {
+    if ((dift = std::abs(t - tpts[i])) < dif)
+    {
       nsx = i;
       dif = dift;
     }
     cx[i] = dx[i] = xpts[i];
   }
-  
-  for (int i = 0; i < mm; i++) {
+
+  for (int i = 0; i < mm; i++)
+  {
     cy[i] = dy[i] = ypts[i];
   }
-  
-  for (int i = 0; i < mm; i++) {
+
+  for (int i = 0; i < mm; i++)
+  {
     cz[i] = dz[i] = zpts[i];
   }
 
@@ -161,16 +158,19 @@ int dso::sp3::neville_interpolation3(double t, double *estimates, double *destim
   estimates[1] = ypts[nsy--];
   estimates[2] = zpts[nsz--];
 
-  double ho, hp, wx, denx, wy, deny, wz, denz,den;
+  double ho, hp, wx, denx, wy, deny, wz, denz, den;
   // For each column of the tableau we loop over the current c’s and d’s and
   // update
-  for (int m = 1; m < mm; m++) {
-    for (int i = 0; i < mm - m; i++) {
+  for (int m = 1; m < mm; m++)
+  {
+    for (int i = 0; i < mm - m; i++)
+    {
       ho = tpts[i] - t;
       hp = tpts[i + m] - t;
       // This error can occur only if two input xa’s are(to within roundoﬀ)
       // identical
-      if ((den = ho - hp) == 0e0) {
+      if ((den = ho - hp) == 0e0)
+      {
         fprintf(
             stderr,
             "[ERROR] x-axis points too close to interpolate!(traceback: %s)\n",
