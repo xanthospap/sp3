@@ -1,11 +1,12 @@
 #include "sv_interpolate.hpp"
 
 int dso::SvInterpolator::compute_workspace_size() noexcept {
-  dso::milliseconds data_every_ms{
-      dso::cast_to<dso::microseconds, dso::milliseconds>(sp3->interval())};
-  int lr_points =
-      max_millisec.as_underlying_type() / data_every_ms.as_underlying_type() + 1;
-  return lr_points * 2 + 1;
+  dso::nanoseconds lr_intrvl =
+      dso::cast_to<dso::milliseconds, dso::nanoseconds>(max_millisec);
+  int one_side_pts =
+      lr_intrvl.as_underlying_type() / sp3->interval().as_underlying_type();
+  ++one_side_pts;
+  return one_side_pts * 2 + 1;
 }
 
 int dso::SvInterpolator::feed_from_sp3() noexcept {
@@ -76,7 +77,7 @@ dso::SvInterpolator::SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj)
   workspace = new double[workspace_size * 6];
 }
 
-int dso::SvInterpolator::interpolate_at(dso::datetime<dso::microseconds> t,
+int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
                                         double *result,
                                         double *error) noexcept {
 
@@ -89,19 +90,25 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::microseconds> t,
 #endif
 
   // the max allowed interval as datetime_interval to symplify computations
-  dso::datetime_interval<dso::microseconds> max_t{
+  dso::datetime_interval<dso::nanoseconds> max_t{
       dso::modified_julian_day{0},
-      dso::cast_to<dso::milliseconds, dso::microseconds>(max_millisec)};
+      dso::cast_to<dso::milliseconds, dso::nanoseconds>(max_millisec)};
 
   // start point on the left ....
   int start = index;
   while (start > 0 && t - data[start].t < max_t)
     --start;
   if (index - start < min_dpts_on_each_side) {
+    fprintf(
+        stderr,
+        "[ERROR] Cannot interpolate due to too few data points (on the left) "
+        "(traceback: %s)\n",
+        __func__);
+#ifdef DEBUG
     fprintf(stderr,
-            "[ERROR] Cannot interpolate due to too few data points (on the left) "
-            "(traceback: %s)\n",
-            __func__);
+            "[ERROR] Index=%d (start=%d), index mjd=%.9f, data start=%.9f\n",
+            index, start, data[index].t.as_mjd(), sp3->start_epoch().as_mjd());
+#endif
     return 1;
   }
 
@@ -110,10 +117,11 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::microseconds> t,
   while (stop < num_dpts - 1 && data[stop].t - t < max_t)
     ++stop;
   if (stop - index < min_dpts_on_each_side) {
-    fprintf(stderr,
-            "[ERROR] Cannot interpolate due to too few data points (on the right) "
-            "(traceback: %s)\n",
-            __func__);
+    fprintf(
+        stderr,
+        "[ERROR] Cannot interpolate due to too few data points (on the right) "
+        "(traceback: %s)\n",
+        __func__);
     return 1;
   }
 
@@ -122,10 +130,10 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::microseconds> t,
 
   // seperate the workspace arena to arrays of x, y, z and time
   int wsz = compute_workspace_size();
-  double * __restrict__ td = txyz + 0 * wsz;
-  double * __restrict__ xd = txyz + 1 * wsz;
-  double * __restrict__ yd = txyz + 2 * wsz;
-  double * __restrict__ zd = txyz + 3 * wsz;
+  double *__restrict__ td = txyz + 0 * wsz;
+  double *__restrict__ xd = txyz + 1 * wsz;
+  double *__restrict__ yd = txyz + 2 * wsz;
+  double *__restrict__ zd = txyz + 3 * wsz;
 
   // fill in arays for each component
   auto start_t = sp3->start_epoch();

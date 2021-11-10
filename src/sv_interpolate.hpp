@@ -36,9 +36,9 @@ private:
   int last_index{0};
   /// interval to use in interpolation, aka use points up to max_millisec away 
   /// from requested epoch to perform the interpolation
-  dso::milliseconds max_millisec {60 * 60 * 2 * 1'000L};
+  dso::milliseconds max_millisec {(3*60+1) * dso::milliseconds::sec_factor<long>()};
   /// minimum number of points on each side to perform interpolation
-  int min_dpts_on_each_side {4};
+  int min_dpts_on_each_side {2};
   /// data points/blocks to be collected from the Sp3
   Sp3DataBlock *data{nullptr};
   /// time, x, y and z data arrays used in interpolation
@@ -63,7 +63,7 @@ private:
   /// @brief Return the index of the data block in the data array, so that
   ///        bloc[i].t <= t < block[i+1].t
   ///        Try to make an educated guess...
-  int index_hunt(const dso::datetime<dso::microseconds> &t) noexcept {
+  int index_hunt(const dso::datetime<dso::nanoseconds> &t) noexcept {
 
     // quick .....
     if (last_index < num_dpts-2) {
@@ -77,7 +77,7 @@ private:
     int start_index = (data[last_index].t <= t) ? last_index : 0;
     auto it = std::lower_bound(
         data+start_index, data + num_dpts, t,
-        [](const Sp3DataBlock &block, const dso::datetime<dso::microseconds>& tt) {
+        [](const Sp3DataBlock &block, const dso::datetime<dso::nanoseconds>& tt) {
         return block.t < tt;
         });
     return (last_index=static_cast<int>(it-data));
@@ -105,7 +105,7 @@ public:
 
   int num_data_points() const noexcept { return num_dpts; }
 
-  int interpolate_at(dso::datetime<dso::microseconds> t, double *result,
+  int interpolate_at(dso::datetime<dso::nanoseconds> t, double *result,
                      double *error) noexcept;
 }; // SvInterpolator
 
