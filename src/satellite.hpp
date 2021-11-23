@@ -1,6 +1,7 @@
 #ifndef __SP3C_SATELLITE_FILE__
 #define __SP3C_SATELLITE_FILE__
 
+#include <cstring>
 #include "ggdatetime/dtcalendar.hpp"
 
 namespace dso::sp3 {
