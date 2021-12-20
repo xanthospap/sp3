@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
       printf("EOF encountered; Sp3 file read through!\n");
     }
     bool position_ok = !block.flag.is_set(Sp3Event::bad_abscent_position);
-    bool velocity_ok = !block.flag.is_set(Sp3Event::bad_abscent_velocity);
+    // bool velocity_ok = !block.flag.is_set(Sp3Event::bad_abscent_velocity);
     if (position_ok) printf("%15.6f %15.7f %15.7f %15.7f\n", block.t.as_mjd(), block.state[0], block.state[1], block.state[2]);
     ++rec_count;
   } while (!j);

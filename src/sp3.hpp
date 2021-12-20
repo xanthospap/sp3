@@ -1,14 +1,14 @@
 #ifndef __SP3C_IGS_FILE__
 #define __SP3C_IGS_FILE__
 
-#include "ggdatetime/dtcalendar.hpp"
+#include "datetime/dtcalendar.hpp"
 #include "sp3flag.hpp"
 #include "satellite.hpp"
 #include <algorithm>
 #include <fstream>
 #include <vector>
 #ifdef DEBUG
-#include "ggdatetime/datetime_write.hpp"
+#include "datetime/datetime_write.hpp"
 #endif
 
 namespace dso {
