@@ -31,8 +31,7 @@ bool substr_is_empty(const char *str, std::size_t count) noexcept {
 /// @param[in] line An Epoch Header Record to be resolved
 /// @param[out] t The epoch resolved from the input line
 /// @return Anything other than 0 denotes an error
-int dso::Sp3c::resolve_epoch_line(
-    dso::datetime<dso::nanoseconds> &t) noexcept {
+int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
   char line[MAX_RECORD_CHARS];
   char *end;
   const char *start;
@@ -65,7 +64,8 @@ int dso::Sp3c::resolve_epoch_line(
   t = dso::datetime<dso::nanoseconds>(
       dso::year(date[0]), dso::month(date[1]), dso::day_of_month(date[2]),
       dso::hours(date[3]), dso::minutes(date[4]),
-      dso::nanoseconds(static_cast<long>(fsec * dso::nanoseconds::sec_factor<double>())));
+      dso::nanoseconds(
+          static_cast<long>(fsec * dso::nanoseconds::sec_factor<double>())));
 
   return 0;
 }

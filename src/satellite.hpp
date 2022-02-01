@@ -1,8 +1,8 @@
 #ifndef __SP3C_SATELLITE_FILE__
 #define __SP3C_SATELLITE_FILE__
 
-#include <cstring>
 #include "datetime/dtcalendar.hpp"
+#include <cstring>
 
 namespace dso::sp3 {
 
@@ -17,18 +17,17 @@ constexpr int SAT_ID_MAX_CHARS = SAT_ID_CHARS + 1;
 struct SatelliteId {
   /// @brief The id of the space vehicle (3chars plus the null terminating char)
   char id[SAT_ID_MAX_CHARS] = {'\0'};
-  
-  /// @brief Constructor from a c-string; this will only copy the first 
+
+  /// @brief Constructor from a c-string; this will only copy the first
   /// SAT_ID_CHARS (from the input string) to the instance's id
   explicit SatelliteId(const char *str = nullptr) noexcept {
-    if (str) set_id(str);
+    if (str)
+      set_id(str);
   }
-  
-  /// @brief Set id from a c-string; this will only copy the first 
+
+  /// @brief Set id from a c-string; this will only copy the first
   /// SAT_ID_CHARS (from the input string) to the instance's id
-  void set_id(const char* str) noexcept {
-    std::memcpy(id, str, SAT_ID_CHARS);
-  }
+  void set_id(const char *str) noexcept { std::memcpy(id, str, SAT_ID_CHARS); }
 
   /// @brief Compare satellite id's
   bool operator==(const SatelliteId &s) const noexcept {
@@ -41,8 +40,10 @@ struct SatelliteId {
   }
 
   /// @brief Cast the id to an std::string
-  std::string to_string() const noexcept { return std::string(id, SAT_ID_CHARS); }
+  std::string to_string() const noexcept {
+    return std::string(id, SAT_ID_CHARS);
+  }
 };
 
-}//dso
+} // namespace dso::sp3
 #endif

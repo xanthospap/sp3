@@ -71,7 +71,8 @@ int dso::Sp3c::read_header() noexcept {
   start_epoch__ = dso::datetime<dso::nanoseconds>(
       dso::year(year), dso::month(month), dso::day_of_month(dom),
       dso::hours(hour), dso::minutes(minute),
-      dso::nanoseconds(static_cast<long>(sec * dso::nanoseconds::sec_factor<double>())));
+      dso::nanoseconds(
+          static_cast<long>(sec * dso::nanoseconds::sec_factor<double>())));
 
   // Read the second line. Error codes [20,30)
   // ------------------------------------------------------------
@@ -87,14 +88,16 @@ int dso::Sp3c::read_header() noexcept {
   // validate start epoch (#1)
   dso::nanoseconds sw;
   auto gwk1 = start_epoch__.as_gps_wsow(sw);
-  if (gwk1.as_underlying_type() != gwk || std::abs(sw.to_fractional_seconds()-sec)>1e-12) {
+  if (gwk1.as_underlying_type() != gwk ||
+      std::abs(sw.to_fractional_seconds() - sec) > 1e-12) {
     fprintf(stderr, "[ERROR][%15s] Failed to validate start date\n", __func__);
     // fprintf(stderr, "%.15f %.15f\n", sec, sw.to_fractional_seconds());
     // fprintf(stderr, "%d %d\n", (int)gwk1.as_underlying_type(), gwk);
     return 22;
   }
   sec = std::strtod(line + 24, &str_end);
-  interval__ = dso::nanoseconds(static_cast<long>(sec * dso::nanoseconds::sec_factor<double>()));
+  interval__ = dso::nanoseconds(
+      static_cast<long>(sec * dso::nanoseconds::sec_factor<double>()));
   int mjd = std::strtol(line + 39, &str_end, 10);
   if (!mjd || errno == ERANGE) {
     errno = 0;

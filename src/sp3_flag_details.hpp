@@ -18,18 +18,18 @@ struct Sp3FlagWrapper {
   uitype bits_{0};
 }; // Sp3FlagWrapper
 
-} // sp3
+} // namespace sp3
 
 /// @enum Sp3Event Describe an event that can be recorded in an Sp3 file
 ///       A record may be marked with multiple (or none) Sp3Event's
 enum class Sp3Event : sp3::uitype {
   /// Bad or absent positional values are to be set to 0.000000
   bad_abscent_position = 0,
-  
+
   /// Bad or absent clock values are set to _999999.999999.  The six integer
   /// nines are required, whereasthe fractional part nines are optional.
   bad_abscent_clock,
-  
+
   /// Column 75 is the Clock Event Flag (either 'E' or blank).  An 'E' flag is
   /// used to denote a discontinuity in the satellite clock correction (this
   /// might be caused by a clock swap on the satellite). The discontinuity is
@@ -37,7 +37,7 @@ enum class Sp3Event : sp3::uitype {
   /// current epoch, or at the current epoch. A blank means either no event
   /// occurred, or it is unknown whether any event occurred.
   clock_event,
-  
+
   /// Column 76 is theClock Correction Prediction Flag (either 'P' or blank).
   /// A 'P' flagindicates that the satellite clock correction at this epoch is
   /// predicted.A blank means that the clock correction is observed.
@@ -55,27 +55,27 @@ enum class Sp3Event : sp3::uitype {
   /// A blank means either nomaneuver occurred, or it is unknown whether any
   /// maneuver occurred.
   maneuver,
-  
+
   /// Column 80 is the Orbit Prediction Flag (either 'P' or blank).  A 'P'
   /// flag indicates that the satellite position at this epoch is predicted. A
   /// blank means thatthe satellite position is observed.
   orbit_prediction,
-  
+
   /// Reocord has valid position std. deviation records
   has_pos_stddev,
-  
+
   /// Reocord has valid clock std. deviation records
   has_clk_stddev,
-  
+
   /// Bad or absent velocity (positional) values are to be set to 0.000000
   bad_abscent_velocity,
-  
+
   /// Bad or absent clock rate values
   bad_abscent_clock_rate,
-  
+
   /// Reocord has valid position std. deviation records
   has_vel_stddev,
-  
+
   /// Reocord has valid clock std. deviation records
   has_clk_rate_stdev
 }; // Sp3Event
@@ -110,8 +110,7 @@ sp3::Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2) noexcept;
 ///          Sp3Event::clock_event|Sp3Event::has_clk_rate_stdev);
 /// This here is the final step ....
 /// @see Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2)
-sp3::Sp3FlagWrapper operator|(sp3::Sp3FlagWrapper e1,
-                                          Sp3Event e2) noexcept;
+sp3::Sp3FlagWrapper operator|(sp3::Sp3FlagWrapper e1, Sp3Event e2) noexcept;
 
-}// dso
+} // dso
 #endif

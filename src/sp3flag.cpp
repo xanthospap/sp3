@@ -1,9 +1,8 @@
 #include "sp3flag.hpp"
 
 /// Create a copy of the input Sp3FlagWrapper e1 with the e2 event turned on
-dso::sp3::Sp3FlagWrapper
-dso::operator|(dso::sp3::Sp3FlagWrapper e1,
-               dso::Sp3Event e2) noexcept {
+dso::sp3::Sp3FlagWrapper dso::operator|(dso::sp3::Sp3FlagWrapper e1,
+                                        dso::Sp3Event e2) noexcept {
   dso::sp3::Sp3FlagWrapper wf;
   wf.bits_ = e1.bits_;
   wf.bits_ |= (1 << static_cast<dso::sp3::uitype>(e2));
@@ -12,7 +11,7 @@ dso::operator|(dso::sp3::Sp3FlagWrapper e1,
 
 /// Create a Sp3FlagWrapper instance with (only) the events e1 and e2 set
 dso::sp3::Sp3FlagWrapper dso::operator|(dso::Sp3Event e1,
-                                                    dso::Sp3Event e2) noexcept {
+                                        dso::Sp3Event e2) noexcept {
   dso::sp3::Sp3FlagWrapper wf;
   wf.bits_ |= (1 << static_cast<dso::sp3::uitype>(e1));
   wf.bits_ |= (1 << static_cast<dso::sp3::uitype>(e2));

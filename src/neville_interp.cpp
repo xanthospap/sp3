@@ -1,6 +1,6 @@
+#include "sv_interpolate.hpp"
 #include <cmath>
 #include <cstdio>
-#include "sv_interpolate.hpp"
 
 /// @brief A slightly modified Neville's interpolation algorithm
 /// @see 3.2 Polynomial Interpolation and Extrapolation, Numerical Recipes,
@@ -22,9 +22,10 @@
 ///         1: not enough points to perform interpolation
 ///        >1: computation error
 int dso::sp3::neville_interpolation(double x, double &y, double &dy,
-                          const double *__restrict__ xx, const double *__restrict__ yy,
-                          int array_size, int mm, int from_index, double *cws,
-                          double *dws) noexcept {
+                                    const double *__restrict__ xx,
+                                    const double *__restrict__ yy,
+                                    int array_size, int mm, int from_index,
+                                    double *cws, double *dws) noexcept {
 
   const double *xpts = xx + from_index;
   const double *ypts = yy + from_index;
@@ -96,7 +97,7 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
   return 0;
 }
 
-/// @brief Neville interpolation for three componenents, adjusted to performing 
+/// @brief Neville interpolation for three componenents, adjusted to performing
 ///        interpolation on one x point but for several distinct arrays. This is
 ///        ment e.g. to interpolate a time-point for (x,y,z) coordinates
 int dso::sp3::neville_interpolation3(
@@ -110,8 +111,7 @@ int dso::sp3::neville_interpolation3(
   const double *__restrict__ ypts = yy + from_index;
   const double *__restrict__ zpts = zz + from_index;
 
-  if (from_index + mm > array_size)
-  {
+  if (from_index + mm > array_size) {
     fprintf(stderr,
             "[ERROR] Not enough data points to perform interpolation "
             "(traceback: %s)\n",
@@ -132,23 +132,19 @@ int dso::sp3::neville_interpolation3(
   double dif = std::abs(t - tpts[0]);
   // ﬁnd the index ns of the closest table entry and initialize the tableau of
   // c’s and d’s
-  for (int i = 0; i < mm; i++)
-  {
-    if ((dift = std::abs(t - tpts[i])) < dif)
-    {
+  for (int i = 0; i < mm; i++) {
+    if ((dift = std::abs(t - tpts[i])) < dif) {
       nsx = i;
       dif = dift;
     }
     cx[i] = dx[i] = xpts[i];
   }
 
-  for (int i = 0; i < mm; i++)
-  {
+  for (int i = 0; i < mm; i++) {
     cy[i] = dy[i] = ypts[i];
   }
 
-  for (int i = 0; i < mm; i++)
-  {
+  for (int i = 0; i < mm; i++) {
     cz[i] = dz[i] = zpts[i];
   }
 
@@ -161,16 +157,13 @@ int dso::sp3::neville_interpolation3(
   double ho, hp, wx, denx, wy, deny, wz, denz, den;
   // For each column of the tableau we loop over the current c’s and d’s and
   // update
-  for (int m = 1; m < mm; m++)
-  {
-    for (int i = 0; i < mm - m; i++)
-    {
+  for (int m = 1; m < mm; m++) {
+    for (int i = 0; i < mm - m; i++) {
       ho = tpts[i] - t;
       hp = tpts[i + m] - t;
       // This error can occur only if two input xa’s are(to within roundoﬀ)
       // identical
-      if ((den = ho - hp) == 0e0)
-      {
+      if ((den = ho - hp) == 0e0) {
         fprintf(
             stderr,
             "[ERROR] x-axis points too close to interpolate!(traceback: %s)\n",
@@ -197,9 +190,12 @@ int dso::sp3::neville_interpolation3(
     // tableau to its apex, updating ns accordingly to keep track of where we
     // are. This route keeps the partial approximations centered (insofar as
     // possible) on the target x.The last dy added is thus the error indication.
-    estimates[0] += (destimates[0] = (2 * (nsx + 1) < (mm - m) ? cx[nsx + 1] : dx[nsx--]));
-    estimates[1] += (destimates[1] = (2 * (nsy + 1) < (mm - m) ? cx[nsy + 1] : dx[nsy--]));
-    estimates[2] += (destimates[2] = (2 * (nsz + 1) < (mm - m) ? cx[nsz + 1] : dx[nsz--]));
+    estimates[0] +=
+        (destimates[0] = (2 * (nsx + 1) < (mm - m) ? cx[nsx + 1] : dx[nsx--]));
+    estimates[1] +=
+        (destimates[1] = (2 * (nsy + 1) < (mm - m) ? cx[nsy + 1] : dx[nsy--]));
+    estimates[2] +=
+        (destimates[2] = (2 * (nsz + 1) < (mm - m) ? cx[nsz + 1] : dx[nsz--]));
   }
 
   return 0;

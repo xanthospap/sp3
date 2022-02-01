@@ -2,8 +2,8 @@
 #define __SP3C_IGS_FILE__
 
 #include "datetime/dtcalendar.hpp"
-#include "sp3flag.hpp"
 #include "satellite.hpp"
+#include "sp3flag.hpp"
 #include <algorithm>
 #include <fstream>
 #include <vector>
@@ -96,9 +96,9 @@ public:
   std::vector<sp3::SatelliteId> sattellite_vector() const noexcept {
     return sat_vec__;
   }
-  
+
   /// @brief Return the vector of satellites included in the sp3 file
-  std::vector<sp3::SatelliteId>& sattellite_vector() noexcept {
+  std::vector<sp3::SatelliteId> &sattellite_vector() noexcept {
     return sat_vec__;
   }
 
@@ -114,30 +114,30 @@ private:
   int resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept;
 
   /// @brief Get and resolve the next Position and Clock Record
-  int get_next_position(sp3::SatelliteId &sat, double &xkm, double &ykm, double &zkm,
-                        double &clk, double &xstdv, double &ystdv,
+  int get_next_position(sp3::SatelliteId &sat, double &xkm, double &ykm,
+                        double &zkm, double &clk, double &xstdv, double &ystdv,
                         double &zstdv, double &cstdv, Sp3Flag &flag,
                         const sp3::SatelliteId *wsat = nullptr) noexcept;
 
   /// @brief Get and resolve the next Velocity and ClockRate-of-Change Record
-  int get_next_velocity(sp3::SatelliteId &sat, double &xkm, double &ykm, double &zkm,
-                        double &clk, double &xstdv, double &ystdv,
+  int get_next_velocity(sp3::SatelliteId &sat, double &xkm, double &ykm,
+                        double &zkm, double &clk, double &xstdv, double &ystdv,
                         double &zstdv, double &cstdv, Sp3Flag &flag,
                         const sp3::SatelliteId *wsat = nullptr) noexcept;
 
-  std::string __filename;  ///< The name of the file
-  std::ifstream __istream; ///< The infput (file) stream
-  char version__;          ///< the version 'c' or 'd'
+  std::string __filename;                        ///< The name of the file
+  std::ifstream __istream;                       ///< The infput (file) stream
+  char version__;                                ///< the version 'c' or 'd'
   dso::datetime<dso::nanoseconds> start_epoch__; ///< Start epoch
-  int num_epochs__,              ///< Number of epochs in file
-      num_sats__;                ///< Number od SVs in file
-  char crd_sys__[6] = {'\0'},    ///< Coordinate system (last char always '\0')
-      orb_type__[4] = {'\0'},    ///< Orbit type (last char always '\0')
-      agency__[5] = {'\0'},      ///< Agency (last char always '\0')
-      time_sys__[4] = {'\0'};    ///< Time system (last char always '\0')
+  int num_epochs__,                              ///< Number of epochs in file
+      num_sats__;                                ///< Number od SVs in file
+  char crd_sys__[6] = {'\0'},  ///< Coordinate system (last char always '\0')
+      orb_type__[4] = {'\0'},  ///< Orbit type (last char always '\0')
+      agency__[5] = {'\0'},    ///< Agency (last char always '\0')
+      time_sys__[4] = {'\0'};  ///< Time system (last char always '\0')
   dso::nanoseconds interval__; ///< Epoch interval
   // SATELLITE_SYSTEM __satsys;     ///< satellite system
-  pos_type __end_of_head;             ///< Mark the 'END OF HEADER' field
+  pos_type __end_of_head;                  ///< Mark the 'END OF HEADER' field
   std::vector<sp3::SatelliteId> sat_vec__; ///< Vector of satellite id's
   double fpb_pos__, ///< floating point base for position std. dev (mm or 10**-4
                     ///< mm/sec)

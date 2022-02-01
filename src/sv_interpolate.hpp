@@ -20,7 +20,7 @@ int neville_interpolation3(double t, double *estimates, double *destimates,
                            const double *__restrict__ yy,
                            const double *__restrict__ zz, int array_size,
                            int mm, int from_index, double *workspace) noexcept;
-} // sp3
+} // namespace sp3
 
 constexpr int MIN_INTERPOLATION_PTS = 4;
 
@@ -34,11 +34,12 @@ private:
   Sp3c *sp3{nullptr};
   /// last index of data used in the interpolation
   int last_index{0};
-  /// interval to use in interpolation, aka use points up to max_millisec away 
+  /// interval to use in interpolation, aka use points up to max_millisec away
   /// from requested epoch to perform the interpolation
-  dso::milliseconds max_millisec {(3*60+1) * dso::milliseconds::sec_factor<long>()};
+  dso::milliseconds max_millisec{(3 * 60 + 1) *
+                                 dso::milliseconds::sec_factor<long>()};
   /// minimum number of points on each side to perform interpolation
-  int min_dpts_on_each_side {2};
+  int min_dpts_on_each_side{2};
   /// data points/blocks to be collected from the Sp3
   Sp3DataBlock *data{nullptr};
   /// time, x, y and z data arrays used in interpolation
@@ -66,40 +67,42 @@ private:
   int index_hunt(const dso::datetime<dso::nanoseconds> &t) noexcept {
 
     // quick .....
-    if (last_index < num_dpts-2) {
-      if (data[last_index].t <= t && data[last_index+1].t > t) {
+    if (last_index < num_dpts - 2) {
+      if (data[last_index].t <= t && data[last_index + 1].t > t) {
         return last_index;
-      } else if (data[last_index+1].t <= t && data[last_index+2].t > t) {
+      } else if (data[last_index + 1].t <= t && data[last_index + 2].t > t) {
         return (++last_index);
       }
     }
 
     int start_index = (data[last_index].t <= t) ? last_index : 0;
     auto it = std::lower_bound(
-        data+start_index, data + num_dpts, t,
-        [](const Sp3DataBlock &block, const dso::datetime<dso::nanoseconds>& tt) {
-        return block.t < tt;
-        });
-    return (last_index=static_cast<int>(it-data));
+        data + start_index, data + num_dpts, t,
+        [](const Sp3DataBlock &block,
+           const dso::datetime<dso::nanoseconds> &tt) { return block.t < tt; });
+    return (last_index = static_cast<int>(it - data));
   }
 
 public:
   SvInterpolator(sp3::SatelliteId sid) noexcept : svid(sid){};
- 
+
   /// @brief Constructor from a SatelliteId and an Sp3c instance; this function
   ///        will:
   ///        1. call the feed_from_sp3() function, to allocate needed memory
   ///           and read in the satellite blocks off from the sp3 file
   ///        2. allocate enough workspace (a memory arena) for the t, x, y, and
   ///           z arrays (for later calls to interpolate at) and also the
-  ///           c, d arrays that are needed for neville interpolation 
+  ///           c, d arrays that are needed for neville interpolation
   SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj);
 
   /// @brief Destructor (free memmory)
   ~SvInterpolator() noexcept {
-    if (data && num_dpts) delete[] data;
-    if (txyz) delete[] txyz;
-    if (workspace) delete[] workspace;
+    if (data && num_dpts)
+      delete[] data;
+    if (txyz)
+      delete[] txyz;
+    if (workspace)
+      delete[] workspace;
     num_dpts = 0;
   }
 
