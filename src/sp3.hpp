@@ -65,6 +65,9 @@ public:
   ///            for SV satid, block will be filled with the parsed values.
   ///            Use the block's flag member to check which values where
   ///            actually parsed (if any at all).
+  ///            Units are :
+  ///            * State Vector: [km] and [dm/sec]
+  ///            * Std. Deviations: [mm] and 10e-4[mm/sec]
   /// @return -1: EOF encountered
   ///          0: All ok
   ///         >0: ERROR
