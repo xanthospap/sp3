@@ -106,6 +106,10 @@ public:
     num_dpts = 0;
   }
 
+  const dso::datetime<dso::nanoseconds> *last_block_date() const noexcept {
+    return (num_dpts) ? &(data[num_dpts-1].t) : nullptr;
+  }
+
   int num_data_points() const noexcept { return num_dpts; }
 
   int interpolate_at(dso::datetime<dso::nanoseconds> t, double *result,
