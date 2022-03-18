@@ -6,8 +6,8 @@ using namespace dso;
 using dso::sp3::SatelliteId;
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <SP3c FILE>\n", argv[0]);
+  if (argc < 2 || argc > 3) {
+    fprintf(stderr, "Usage: %s <SP3c FILE> [SV]\n", argv[0]);
     return 1;
   }
 
@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   SatelliteId sv("L27");
+  if (argc==3) sv.set_id(argv[2]);
 
   if (sp3.num_sats() == 1) {
     printf("\nSp3 file only includes one satellite; perorming interpolation "

@@ -2,6 +2,7 @@
 #define __SV_SP3_INTERPOLATION_HPP__
 
 #include "sp3.hpp"
+#include <datetime/dtfund.hpp>
 #include <stdexcept>
 #ifdef DEBUG
 #include <chrono>
@@ -23,6 +24,7 @@ int neville_interpolation3(double t, double *estimates, double *destimates,
 } // namespace sp3
 
 constexpr int MIN_INTERPOLATION_PTS = 4;
+constexpr const dso::milliseconds three_min_in_millisec {(3 * 60 + 1) * dso::milliseconds::sec_factor<long>()};
 
 class SvInterpolator {
 private:
@@ -36,8 +38,7 @@ private:
   int last_index{0};
   /// interval to use in interpolation, aka use points up to max_millisec away
   /// from requested epoch to perform the interpolation
-  dso::milliseconds max_millisec{(3 * 60 + 1) *
-                                 dso::milliseconds::sec_factor<long>()};
+  dso::milliseconds max_millisec {three_min_in_millisec};
   /// minimum number of points on each side to perform interpolation
   int min_dpts_on_each_side{2};
   /// data points/blocks to be collected from the Sp3
@@ -93,7 +94,7 @@ public:
   ///        2. allocate enough workspace (a memory arena) for the t, x, y, and
   ///           z arrays (for later calls to interpolate at) and also the
   ///           c, d arrays that are needed for neville interpolation
-  SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj);
+  SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj, dso::milliseconds max_allowed_millisec=three_min_in_millisec);
 
   /// @brief Destructor (free memmory)
   ~SvInterpolator() noexcept {

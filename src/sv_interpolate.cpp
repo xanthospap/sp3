@@ -1,4 +1,5 @@
 #include "sv_interpolate.hpp"
+#include <datetime/dtfund.hpp>
 
 int dso::SvInterpolator::compute_workspace_size() noexcept {
   dso::nanoseconds lr_intrvl =
@@ -65,8 +66,8 @@ int dso::SvInterpolator::feed_from_sp3() noexcept {
   return error > 0;
 }
 
-dso::SvInterpolator::SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj)
-    : svid(sid), sp3(&sp3obj) {
+dso::SvInterpolator::SvInterpolator(sp3::SatelliteId sid, Sp3c &sp3obj, dso::milliseconds max_allowed_millisec)
+    : svid(sid), sp3(&sp3obj), max_millisec(max_allowed_millisec) {
   if (int error = feed_from_sp3(); error) {
     throw std::runtime_error("[ERROR] Failed creating SvInterpolator "
                              "instance from Sp3 Error Code: " +
@@ -108,6 +109,9 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
     fprintf(stderr,
             "[ERROR] Index=%d (start=%d), index mjd=%.9f, data start=%.9f\n",
             index, start, data[index].t.as_mjd(), sp3->start_epoch().as_mjd());
+    dso::seconds masec = dso::cast_to<dso::milliseconds, dso::seconds>(max_millisec);
+    dso::seconds sisec = dso::cast_to<dso::nanoseconds, dso::seconds>(this->sp3->interval());
+    fprintf(stderr, "[ERROR] Interpolator allowed to go back %ld seconds, Sp3 file has positions every %ld seconds\n", masec.as_underlying_type(), sisec.as_underlying_type());
 #endif
     return 1;
   }
