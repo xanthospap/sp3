@@ -1,5 +1,5 @@
 from __future__ import print_function
-import os, sys, glob
+import os, sys, glob, platform
 
 ## Prefix for install(ed) files
 if platform.system() != "Windows":
