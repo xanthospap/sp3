@@ -4,7 +4,7 @@ image:
 
 environment:
   matrix:
-  - TOXENV: py310
+  #- TOXENV: py310
   - VCVAR17: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat'
   - VCVAR19: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat'
 
