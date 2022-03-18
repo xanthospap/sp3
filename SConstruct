@@ -55,7 +55,7 @@ ProductionCXXFLAGS_W = '/std:c++17 /Wall /WX /O2'
 
 ## Environments ...
 denv = Environment(CXXFLAGS = DebugCXXFLAGS_P if platform.system() != "Windows" else DebugCXXFLAGS_W)
-penv = Environment(CXXFLAGS = ProductionCXXFLAGS_P if platform.system() != "Windows" else ProductionCXXFLAGS_)
+penv = Environment(CXXFLAGS = ProductionCXXFLAGS_P if platform.system() != "Windows" else ProductionCXXFLAGS_P)
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
