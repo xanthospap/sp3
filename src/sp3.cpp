@@ -37,13 +37,19 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
   const char *start;
 
   __istream.getline(line, MAX_RECORD_CHARS);
-  if (line[0] != '*' || line[1] != ' ')
+  if (line[0] != '*' || line[1] != ' ') {
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
     return 2;
+  }
+
+  // clear errno, will be used later on to signal errors
+  errno = 0;
 
   int date[5];
   date[0] = std::strtol(line + 3, &end, 10);
   if (!date[0] || errno == ERANGE) {
     errno = 0;
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
     return 5;
   }
   start = line + 8;
@@ -51,6 +57,7 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
     date[i] = std::strtol(start, &end, 10);
     if (errno == ERANGE || end == start) {
       errno = 0;
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
       return 5 + i;
     }
     start += 3;
@@ -58,6 +65,7 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
   double fsec = std::strtod(start, &end);
   if (errno == ERANGE || end == start) {
     errno = 0;
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
     return 11;
   }
 
@@ -118,6 +126,9 @@ int dso::Sp3c::get_next_velocity(SatelliteId &sat, double &xv, double &yv,
     }
   }
 
+  // clear errno, will be used later on to signal errors
+  errno = 0;
+  
   start = line + 4;
   for (int i = 0; i < 4; i++) {
     dvec[i] = std::strtod(start, &end);
@@ -237,6 +248,9 @@ int dso::Sp3c::get_next_position(SatelliteId &sat, double &xkm, double &ykm,
       return 0;
     }
   }
+  
+  // clear errno, will be used later on to signal errors
+  errno = 0;
 
   start = line + 4;
   for (int i = 0; i < 4; i++) {
@@ -368,8 +382,12 @@ int dso::Sp3c::get_next_data_block(SatelliteId satid,
   // following line should be an epoch header or 'EOF'
   c = __istream.peek();
   if (c == '*') {
-    if ((status = resolve_epoch_line(block.t)))
+    if ((status = resolve_epoch_line(block.t))) {
+      fprintf(stderr,
+              "ERROR. Failed to resolve sp3 epoch line, error=%d (%s)\n",
+              status, __func__);
       return status + 10;
+    }
   } else {
     __istream.getline(line, MAX_RECORD_CHARS);
     if (!std::strncmp(line, "EOF", 3)) {
