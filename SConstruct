@@ -55,7 +55,7 @@ ProductionCXXFLAGS_W = '/std:c++17 /Wall /WX /O2'
 
 ## Environments ...
 denv = Environment(CXXFLAGS = DebugCXXFLAGS_P if platform.system() != "Windows" else DebugCXXFLAGS_W)
-penv = Environment(CXXFLAGS = ProductionCXXFLAGS_P if platform.system() != "Windows" else ProductionCXXFLAGS_)
+penv = Environment(CXXFLAGS = ProductionCXXFLAGS_P if platform.system() != "Windows" else ProductionCXXFLAGS_P)
 
 ## Command line arguments ...
 debug = ARGUMENTS.get('debug', 0)
@@ -78,8 +78,9 @@ env.Alias(target='install', source=env.Install(dir=os.path.join(prefix, 'include
 env.Alias(target='install', source=env.InstallVersionedLib(dir=os.path.join(prefix, 'lib'), source=vlib))
 
 ## Tests ...
+ext = ".out" if platform.system() != "Windows" else ".exe"
 tests_sources = glob.glob(r"test/*.cpp")
 env.Append(RPATH=root_dir)
 for tsource in tests_sources:
-  ttarget = tsource.replace('_', '-').replace('.cpp', '.out')
+  ttarget = tsource.replace('_', '-').replace('.cpp', ext)
   env.Program(target=ttarget, source=tsource, CPPPATH='src/', LIBS=vlib+['geodesy', 'datetime'], LIBPATH='.')
