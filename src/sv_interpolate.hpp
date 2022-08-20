@@ -116,8 +116,11 @@ public:
 
   int num_data_points() const noexcept { return num_dpts; }
 
-  int interpolate_at(dso::datetime<dso::nanoseconds> t, double *result,
-                     double *error) noexcept;
+  //int interpolate_at(dso::datetime<dso::nanoseconds> t, double *result,
+  //                   double *error) noexcept;
+  int interpolate_at(dso::datetime<dso::nanoseconds> t, double *pos,
+                     double *erpos, double *vel = nullptr,
+                     double *ervel = nullptr) noexcept;
 }; // SvInterpolator
 
 } // namespace dso
