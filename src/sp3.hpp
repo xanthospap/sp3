@@ -6,6 +6,7 @@
 #include "sp3flag.hpp"
 #include <algorithm>
 #include <fstream>
+#include <stdexcept>
 #include <vector>
 #ifdef DEBUG
 #include "datetime/datetime_write.hpp"
@@ -17,7 +18,7 @@ namespace dso {
 /// Instances of this class, hold Sp3 data records for one block (aka one
 /// epoch) and one satellite.
 struct Sp3DataBlock {
-  dso::datetime<dso::nanoseconds> t;
+  dso::datetime<dso::nanoseconds> t{dso::datetime<dso::nanoseconds>::min()};
   double state[8];      ///< [ X, Y, Z, clk, Vx, Vy, Vz, Vc ]
   double state_sdev[8]; ///< following state__
   Sp3Flag flag;         ///< flag for state
@@ -72,6 +73,11 @@ public:
   ///          0: All ok
   ///         >0: ERROR
   int get_next_data_block(sp3::SatelliteId satid, Sp3DataBlock &block) noexcept;
+  
+  /// @brief Assuming we are in a positio in the file where the next line to 
+  ///        be read is an epoch header line, resolve the date, but do not 
+  ///        progress the stream position.
+  int peak_next_data_block(dso::datetime<dso::nanoseconds> &t) noexcept;
 
   /// @brief Check if a given SV in included in the Sp3 (i.e. is included in
   ///        the instance's sat_vec__ member).
@@ -147,6 +153,71 @@ private:
       fpb_clk__;    ///< floating point base for clock std. dev (psec or 10**-4
                     ///< psec/sec)
 }; // Sp3c
+
+class Sp3Iterator {
+  Sp3c *sp3_;
+  sp3::SatelliteId id_;
+  Sp3DataBlock block_;
+
+public:
+  Sp3Iterator(Sp3c &sp3) : sp3_(&sp3) {
+   sp3_->rewind();
+   if (sp3_->get_next_data_block(id_, block_)) {
+     throw std::runtime_error("ERROR Failed to create Sp3Iterator instance!\n");
+    }
+  };
+
+  const Sp3DataBlock &data_block() const noexcept { return block_; }
+
+  void begin() {
+   sp3_->rewind();
+   if (sp3_->get_next_data_block(id_, block_)) {
+     throw std::runtime_error("ERROR Failed to create Sp3Iterator instance!\n");
+    }
+    return;
+  }
+
+  int advance() noexcept {
+    return sp3_->get_next_data_block(id_, block_);
+  }
+
+  dso::datetime<dso::nanoseconds> current_time() const noexcept {
+    return block_.t;
+  }
+
+  int next_epoch(dso::datetime<dso::nanoseconds> &t) const noexcept {
+    return sp3_->peak_next_data_block(t);
+  }
+
+  int goto_epoch(const dso::datetime<dso::nanoseconds> &t) noexcept {
+    int error = 0, advance_er=0;
+    dso::datetime<dso::nanoseconds> ct = block_.t;
+    printf(">> Currently at epoch: %.3f, requested epoch: %.3f\n", ct.as_mjd(), t.as_mjd());
+    
+    if (block_.t < t) {
+      // peak next epoch from next header
+      while (!advance_er && !(error=next_epoch(ct))) {
+        // if next epoch <  requested, read it in
+        if (ct < t) {
+          advance_er = advance();
+        } else {
+          break;
+        }
+      }
+      if (error < 0) { // EOF encountered
+        return -1;
+      }
+      if (error + advance_er) return error + advance_er;
+    } else {
+      this->begin();
+      if (block_.t > t) return 10;
+      return goto_epoch(t);
+    }
+  
+    return error + advance_er;
+  }
+
+}; // Sp3Iterator
 
 } // dso
 

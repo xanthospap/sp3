@@ -354,6 +354,48 @@ dso::Sp3c::Sp3c(const char *filename)
   }
 }
 
+int dso::Sp3c::peak_next_data_block(dso::datetime<dso::nanoseconds> &t) noexcept {
+  char line[MAX_RECORD_CHARS];
+  char c;
+  int error = 0;
+
+  if (!__istream.good())
+    return 1;
+
+  /* possible following lines (three first chars):
+   * 1. '*  ' i.e an epoch header
+   * 2. 'PXX' i.e. a position & clock line, e.g. 'PG01 ....'
+   * 3. 'EP ' i.e. position and clock correlation
+   * 4. 'VXX' i.e. velocity line, e.g. 'VG01 ...'
+   * 5. 'EV ' i.e. velocity correlation
+   * 6. 'EOF' i.e. EOF
+   */
+  const auto pos = __istream.tellg();
+
+  // following line should be an epoch header or 'EOF'
+  c = __istream.peek();
+  if (c == '*') {
+    if ((error = resolve_epoch_line(t))) {
+      fprintf(stderr,
+              "ERROR. Failed to resolve sp3 epoch line, error=%d (%s)\n",
+              error, __func__);
+      error += 10;
+    }
+  } else {
+    __istream.getline(line, MAX_RECORD_CHARS);
+    if (!std::strncmp(line, "EOF", 3)) {
+      __istream.clear(); // clear EOF
+      error = -1;
+    } else {
+      error = 100;
+    }
+  }
+      
+  __istream.seekg(pos);
+
+  return error;
+}
+
 /// Read in the next data block (including the epoch header) and if it has
 /// a position and/or velocity record (lines) for the given satellite, parse
 /// and collect them in the passed in Sp3DataBlock.
