@@ -192,7 +192,6 @@ public:
   int goto_epoch(const dso::datetime<dso::nanoseconds> &t) noexcept {
     int error = 0, advance_er=0;
     dso::datetime<dso::nanoseconds> ct = block_.t;
-    printf(">> Currently at epoch: %.3f, requested epoch: %.3f\n", ct.as_mjd(), t.as_mjd());
     
     if (block_.t < t) {
       // peak next epoch from next header
