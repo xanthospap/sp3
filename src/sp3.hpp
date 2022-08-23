@@ -185,7 +185,7 @@ public:
     return block_.t;
   }
 
-  int next_epoch(dso::datetime<dso::nanoseconds> &t) const noexcept {
+  int peak_next_epoch(dso::datetime<dso::nanoseconds> &t) const noexcept {
     return sp3_->peak_next_data_block(t);
   }
 
@@ -195,7 +195,7 @@ public:
     
     if (block_.t < t) {
       // peak next epoch from next header
-      while (!advance_er && !(error=next_epoch(ct))) {
+      while (!advance_er && !(error=peak_next_epoch(ct))) {
         // if next epoch <  requested, read it in
         if (ct < t) {
           advance_er = advance();
