@@ -1,6 +1,5 @@
 #include "sv_interpolate.hpp"
-#include <datetime/dtcalendar.hpp>
-#include <datetime/dtfund.hpp>
+#include "datetime/calendar.hpp"
 
 int dso::SvInterpolator::compute_workspace_size() noexcept {
   dso::nanoseconds lr_intrvl =
@@ -242,7 +241,7 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
     // td[i] = data[start + i].t.delta_date(start_t).as_mjd();
     td[i] =
         data[start + i].t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(
-            start_t);
+            start_t).seconds();
     xd[i] = data[start + i].state[0];
     yd[i] = data[start + i].state[1];
     zd[i] = data[start + i].state[2];
@@ -250,7 +249,7 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
 
   // point to interpolate at (as fractional days)
   double tx = // t.delta_date(start_t).as_mjd();
-    t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t);
+    t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t).seconds();
 
   // perform the interpolation for all components
   if (sp3::neville_interpolation3(tx, pos, erpos, td, xd, yd, zd, size, size,
@@ -266,7 +265,7 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
     for (int i = 0; i < size; i++) {
       td[i] =
           data[start + i]
-              .t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t);
+              .t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t).seconds();
       xd[i] = data[start + i].state[4];
       yd[i] = data[start + i].state[5];
       zd[i] = data[start + i].state[6];

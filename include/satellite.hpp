@@ -6,7 +6,7 @@
 #ifndef __SP3C_SATELLITE_FILE__
 #define __SP3C_SATELLITE_FILE__
 
-#include "datetime/dtcalendar.hpp"
+#include "datetime/calendar.hpp"
 #include <cstring>
 
 namespace dso::sp3 {

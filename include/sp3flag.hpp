@@ -6,8 +6,7 @@
 #ifndef __SP3C_IGS_FLAGS__
 #define __SP3C_IGS_FLAGS__
 
-#include "sp3_flag_details.hpp"
-#include <cstdint>
+#include "core/sp3_flag_details.hpp"
 
 namespace dso {
 

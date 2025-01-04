@@ -5,7 +5,7 @@
 #ifndef __SP3C_IGS_FILE__
 #define __SP3C_IGS_FILE__
 
-#include "datetime/dtcalendar.hpp"
+#include "datetime/calendar.hpp"
 #include "satellite.hpp"
 #include "sp3flag.hpp"
 #include <algorithm>

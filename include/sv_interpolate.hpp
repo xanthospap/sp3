@@ -73,7 +73,6 @@ private:
    *  bloc[i].t <= t < block[i+1].t
    */
   int index_hunt(const dso::datetime<dso::nanoseconds> &t) noexcept {
-
     // quick .....
     if (last_index < num_dpts - 2) {
       if (data[last_index].t <= t && data[last_index + 1].t > t) {

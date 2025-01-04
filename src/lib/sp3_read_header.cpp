@@ -89,7 +89,7 @@ int dso::Sp3c::read_header() noexcept {
   dso::nanoseconds sw;
   auto gwk1 = start_epoch__.gps_wsow(sw);
   if (gwk1.as_underlying_type() != gwk ||
-      std::abs(dso::to_fractional_seconds(sw) - sec) > 1e-12) {
+      std::abs(dso::to_fractional_seconds(sw).seconds() - sec) > 1e-12) {
     fprintf(stderr, "[ERROR][%15s] Failed to validate start date\n", __func__);
     return 22;
   }

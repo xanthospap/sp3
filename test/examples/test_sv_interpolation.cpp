@@ -38,10 +38,10 @@ int main(int argc, char *argv[]) {
            sv_intrp.data[i].state[2]);*/
 
   auto start_t = sp3.start_epoch();
-  auto stop_t = start_t + dso::datetime_interval<nanoseconds>(
-                              modified_julian_day(1), nanoseconds(0));
+  auto stop_t =
+      start_t + dso::datetime_interval<nanoseconds>(1, nanoseconds(0));
   auto every_t = dso::datetime_interval<nanoseconds>(
-      modified_julian_day(0), nanoseconds(180*dso::nanoseconds::sec_factor<long>()));
+      0, nanoseconds(180 * dso::nanoseconds::sec_factor<long>()));
 
   // interpolate for the whole time span ...
   /*dso::seconds total_sec{sp3.num_epochs() *
@@ -55,7 +55,11 @@ int main(int argc, char *argv[]) {
 
   auto start_timer = std::chrono::high_resolution_clock::now();
   double xyz[3] = {0}, dxdydz[3] = {0};
-  printf("performing interpolation for interval %.5f to %.5f every %ld sec.\n", start_t.as_mjd(), stop_t.as_mjd(), every_t.sec().as_underlying_type()/dso::nanoseconds::sec_factor<long>());
+  printf("performing interpolation for interval %.5f to %.5f every %ld sec.\n",
+         start_t.imjd().as_underlying_type() + start_t.fractional_days().days(),
+         stop_t.imjd().as_underlying_type() + stop_t.fractional_days().days(),
+         every_t.sec().as_underlying_type() /
+             dso::nanoseconds::sec_factor<long>());
   while (start_t < stop_t) {
     sv_intrp.interpolate_at(start_t, xyz, dxdydz);
     // printf("Intrp %.7f %.7f\n", start_t.as_mjd(), *xyz);

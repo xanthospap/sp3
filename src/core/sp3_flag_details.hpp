@@ -137,4 +137,5 @@ sp3::Sp3FlagWrapper operator|(Sp3Event e1, Sp3Event e2) noexcept;
 sp3::Sp3FlagWrapper operator|(sp3::Sp3FlagWrapper e1, Sp3Event e2) noexcept;
 
 } /* namespace dso */
+
 #endif

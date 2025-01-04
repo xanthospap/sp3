@@ -42,7 +42,11 @@ int main(int argc, char *argv[]) {
     }
     bool position_ok = !block.flag.is_set(Sp3Event::bad_abscent_position);
     // bool velocity_ok = !block.flag.is_set(Sp3Event::bad_abscent_velocity);
-    if (position_ok) printf("%15.6f %15.7f %15.7f %15.7f\n", block.t.as_mjd(), block.state[0], block.state[1], block.state[2]);
+    if (position_ok)
+      printf("%15.6f %15.7f %15.7f %15.7f\n",
+             block.t.imjd().as_underlying_type() +
+                 block.t.fractional_days().days(),
+             block.state[0], block.state[1], block.state[2]);
     ++rec_count;
   } while (!j);
 

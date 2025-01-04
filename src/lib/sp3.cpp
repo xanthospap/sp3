@@ -38,7 +38,8 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
 
   __istream.getline(line, MAX_RECORD_CHARS);
   if (line[0] != '*' || line[1] != ' ') {
-    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n", line,
+            __func__);
     return 2;
   }
 
@@ -49,7 +50,8 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
   date[0] = std::strtol(line + 3, &end, 10);
   if (!date[0] || errno == ERANGE) {
     errno = 0;
-    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n", line,
+            __func__);
     return 5;
   }
   start = line + 8;
@@ -57,7 +59,8 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
     date[i] = std::strtol(start, &end, 10);
     if (errno == ERANGE || end == start) {
       errno = 0;
-    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
+      fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n", line,
+              __func__);
       return 5 + i;
     }
     start += 3;
@@ -65,7 +68,8 @@ int dso::Sp3c::resolve_epoch_line(dso::datetime<dso::nanoseconds> &t) noexcept {
   double fsec = std::strtod(start, &end);
   if (errno == ERANGE || end == start) {
     errno = 0;
-    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n",line, __func__);
+    fprintf(stderr, "ERROR. Failed resolving epoch line [%s] (%s)\n", line,
+            __func__);
     return 11;
   }
 
@@ -128,7 +132,7 @@ int dso::Sp3c::get_next_velocity(SatelliteId &sat, double &xv, double &yv,
 
   // clear errno, will be used later on to signal errors
   errno = 0;
-  
+
   start = line + 4;
   for (int i = 0; i < 4; i++) {
     dvec[i] = std::strtod(start, &end);
@@ -248,7 +252,7 @@ int dso::Sp3c::get_next_position(SatelliteId &sat, double &xkm, double &ykm,
       return 0;
     }
   }
-  
+
   // clear errno, will be used later on to signal errors
   errno = 0;
 
@@ -354,7 +358,8 @@ dso::Sp3c::Sp3c(const char *filename)
   }
 }
 
-int dso::Sp3c::peak_next_data_block(dso::datetime<dso::nanoseconds> &t) noexcept {
+int dso::Sp3c::peak_next_data_block(
+    dso::datetime<dso::nanoseconds> &t) noexcept {
   char line[MAX_RECORD_CHARS];
   char c;
   int error = 0;
@@ -377,8 +382,8 @@ int dso::Sp3c::peak_next_data_block(dso::datetime<dso::nanoseconds> &t) noexcept
   if (c == '*') {
     if ((error = resolve_epoch_line(t))) {
       fprintf(stderr,
-              "ERROR. Failed to resolve sp3 epoch line, error=%d (%s)\n",
-              error, __func__);
+              "ERROR. Failed to resolve sp3 epoch line, error=%d (%s)\n", error,
+              __func__);
       error += 10;
     }
   } else {
@@ -390,7 +395,7 @@ int dso::Sp3c::peak_next_data_block(dso::datetime<dso::nanoseconds> &t) noexcept
       error = 100;
     }
   }
-      
+
   __istream.seekg(pos);
 
   return error;

@@ -5,8 +5,8 @@
 
 Utility library and functions for Sp3 files
 
-To build & install use:
 ```
-scons
-sudo scons install
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_COSTG=ON -DCMAKE_PREFIX_PATH=/usr/local/lib
+cmake --build build --target all --config=Release -- -j4
+cd build && sudo make install
 ```
