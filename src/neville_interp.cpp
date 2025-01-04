@@ -2,25 +2,28 @@
 #include <cmath>
 #include <cstdio>
 
-/// @brief A slightly modified Neville's interpolation algorithm
-/// @see 3.2 Polynomial Interpolation and Extrapolation, Numerical Recipes,
-///      3rd Edition
-/// @param[in]  x The point to interpolate at
-/// @param[out] y Value of interpolating polynomial at x
-/// @param[out] dy Error indication for computed y value
-/// @param[in] xx The x-axis data points of size array_size
-/// @param[in] yy The y-axis data points (values at xx's) of size array_size
-/// @param[in] array_size The size of xx and yy arrays
-/// @param[in] mm Number of data points to use for the interpolation; the
-///            interval will be xx[from_index,...,from_index+mm-1]
-/// @param[in] cws (optional) An array of size mm; if not given it will be
-///            allocated/freed during function execution
-/// @param[in] dws (optional) An array of size mm; if not given it will be
-///            allocated/freed during function execution
-/// @return Always returns an int, following the convention:
-///         0: success
-///         1: not enough points to perform interpolation
-///        >1: computation error
+/** @brief A slightly modified Neville's interpolation algorithm
+ *
+ * @see 3.2 Polynomial Interpolation and Extrapolation, Numerical Recipes,
+ *      3rd Edition
+ * 
+ * @param[in]  x The point to interpolate at
+ * @param[out] y Value of interpolating polynomial at x
+ * @param[out] dy Error indication for computed y value
+ * @param[in] xx The x-axis data points of size array_size
+ * @param[in] yy The y-axis data points (values at xx's) of size array_size
+ * @param[in] array_size The size of xx and yy arrays
+ * @param[in] mm Number of data points to use for the interpolation; the
+ *            interval will be xx[from_index,...,from_index+mm-1]
+ * @param[in] cws (optional) An array of size mm; if not given it will be
+ *            allocated/freed during function execution
+ * @param[in] dws (optional) An array of size mm; if not given it will be
+ *            allocated/freed during function execution
+ * @return Always returns an int, following the convention:
+ *         0: success
+ *         1: not enough points to perform interpolation
+ *        >1: computation error
+ */
 int dso::sp3::neville_interpolation(double x, double &y, double &dy,
                                     const double *__restrict__ xx,
                                     const double *__restrict__ yy,
@@ -97,9 +100,10 @@ int dso::sp3::neville_interpolation(double x, double &y, double &dy,
   return 0;
 }
 
-/// @brief Neville interpolation for three componenents, adjusted to performing
-///        interpolation on one x point but for several distinct arrays. This is
-///        ment e.g. to interpolate a time-point for (x,y,z) coordinates
+/** @brief Neville interpolation for three componenents, adjusted to performing
+ *        interpolation on one x point but for several distinct arrays. This is
+ *         ment e.g. to interpolate a time-point for (x,y,z) coordinates
+ */
 int dso::sp3::neville_interpolation3(
     double t, double *estimates, double *destimates,
     const double *__restrict__ tt, const double *__restrict__ xx,

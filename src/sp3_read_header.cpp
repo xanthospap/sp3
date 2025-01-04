@@ -87,12 +87,10 @@ int dso::Sp3c::read_header() noexcept {
   sec = std::strtod(line + 8, &str_end);
   // validate start epoch (#1)
   dso::nanoseconds sw;
-  auto gwk1 = start_epoch__.as_gps_wsow(sw);
+  auto gwk1 = start_epoch__.gps_wsow(sw);
   if (gwk1.as_underlying_type() != gwk ||
-      std::abs(sw.to_fractional_seconds() - sec) > 1e-12) {
+      std::abs(dso::to_fractional_seconds(sw) - sec) > 1e-12) {
     fprintf(stderr, "[ERROR][%15s] Failed to validate start date\n", __func__);
-    // fprintf(stderr, "%.15f %.15f\n", sec, sw.to_fractional_seconds());
-    // fprintf(stderr, "%d %d\n", (int)gwk1.as_underlying_type(), gwk);
     return 22;
   }
   sec = std::strtod(line + 24, &str_end);
@@ -105,7 +103,7 @@ int dso::Sp3c::read_header() noexcept {
   }
   sec = std::strtod(line + 45, &str_end);
   sec += mjd;
-  if (sec != start_epoch__.as_mjd()) {
+  if (sec != start_epoch__.fmjd()) {
     fprintf(stderr, "[ERROR][%15s] Failed to validate start date", __func__);
     return 24;
   }

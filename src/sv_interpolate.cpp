@@ -1,4 +1,5 @@
 #include "sv_interpolate.hpp"
+#include <datetime/dtcalendar.hpp>
 #include <datetime/dtfund.hpp>
 
 int dso::SvInterpolator::compute_workspace_size() noexcept {
@@ -182,10 +183,9 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
   }
 #endif
 
-  // the max allowed interval as datetime_interval to symplify computations
+  // the max allowed interval as datetime_interval to simplify computations
   dso::datetime_interval<dso::nanoseconds> max_t{
-      dso::modified_julian_day{0},
-      dso::cast_to<dso::milliseconds, dso::nanoseconds>(max_millisec)};
+      0, dso::cast_to<dso::milliseconds, dso::nanoseconds>(max_millisec)};
 
   // start point on the left ....
   int start = index;
@@ -239,14 +239,18 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
   // fill in arays for each component
   auto start_t = sp3->start_epoch();
   for (int i = 0; i < size; i++) {
-    td[i] = data[start + i].t.delta_date(start_t).as_mjd();
+    // td[i] = data[start + i].t.delta_date(start_t).as_mjd();
+    td[i] =
+        data[start + i].t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(
+            start_t);
     xd[i] = data[start + i].state[0];
     yd[i] = data[start + i].state[1];
     zd[i] = data[start + i].state[2];
   }
 
   // point to interpolate at (as fractional days)
-  double tx = t.delta_date(start_t).as_mjd();
+  double tx = // t.delta_date(start_t).as_mjd();
+    t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t);
 
   // perform the interpolation for all components
   if (sp3::neville_interpolation3(tx, pos, erpos, td, xd, yd, zd, size, size,
@@ -260,7 +264,9 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
   if (vel && ervel) {
     // fill in arays for each component
     for (int i = 0; i < size; i++) {
-      td[i] = data[start + i].t.delta_date(start_t).as_mjd();
+      td[i] =
+          data[start + i]
+              .t.diff<dso::DateTimeDifferenceType::FractionalSeconds>(start_t);
       xd[i] = data[start + i].state[4];
       yd[i] = data[start + i].state[5];
       zd[i] = data[start + i].state[6];
