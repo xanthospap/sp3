@@ -196,19 +196,19 @@ int dso::SvInterpolator::interpolate_at(dso::datetime<dso::nanoseconds> t,
         "[ERROR] Cannot interpolate due to too few data points (on the left) "
         "(traceback: %s)\n",
         __func__);
-#ifdef DEBUG
-    fprintf(stderr,
-            "[ERROR] Index=%d (start=%d), index mjd=%.9f, data start=%.9f\n",
-            index, start, data[index].t.as_mjd(), sp3->start_epoch().as_mjd());
-    dso::seconds masec =
-        dso::cast_to<dso::milliseconds, dso::seconds>(max_millisec);
-    dso::seconds sisec =
-        dso::cast_to<dso::nanoseconds, dso::seconds>(this->sp3->interval());
-    fprintf(stderr,
-            "[ERROR] Interpolator allowed to go back %ld seconds, Sp3 file has "
-            "positions every %ld seconds\n",
-            masec.as_underlying_type(), sisec.as_underlying_type());
-#endif
+//#ifdef DEBUG
+//    fprintf(stderr,
+//            "[ERROR] Index=%d (start=%d), index mjd=%.9f, data start=%.9f\n",
+//            index, start, data[index].t.as_mjd(), sp3->start_epoch().as_mjd());
+//    dso::seconds masec =
+//        dso::cast_to<dso::milliseconds, dso::seconds>(max_millisec);
+//    dso::seconds sisec =
+//        dso::cast_to<dso::nanoseconds, dso::seconds>(this->sp3->interval());
+//    fprintf(stderr,
+//            "[ERROR] Interpolator allowed to go back %ld seconds, Sp3 file has "
+//            "positions every %ld seconds\n",
+//            masec.as_underlying_type(), sisec.as_underlying_type());
+//#endif
     return 1;
   }
 

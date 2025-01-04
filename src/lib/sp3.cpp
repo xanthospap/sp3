@@ -489,12 +489,12 @@ int dso::Sp3c::get_next_data_block(SatelliteId satid,
 void dso::Sp3c::print_members() const noexcept {
   std::cout << "\nfilename     :" << __filename
             << "\nVersion      :" << version__
-            << "\nStart Epoch  :" << dso::strftime_ymd_hms(start_epoch__)
+            //<< "\nStart Epoch  :" << dso::strftime_ymd_hms(start_epoch__)
             << "\n# Epochs     :" << num_epochs__
             << "\nCoordinate S :" << crd_sys__
             << "\nOrbit Type   :" << orb_type__
             << "\nAgency       :" << agency__
-            << "\nTime System  :" << time_sys__
-            << "\nInterval(sec):" << interval__.to_fractional_seconds();
+            << "\nTime System  :" << time_sys__;
+            //<< "\nInterval(sec):" << interval__.to_fractional_seconds();
 }
 #endif

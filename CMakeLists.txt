@@ -17,7 +17,7 @@ set(PROJECT_DEPENDENCIES datetime)
 option(ENABLE_CLANG_TIDY "Enable clang-tidy checks" OFF)
 
 # Define an option for building tests (defaults to ON)
-option(BUILD_TESTING "Enable building of tests" OFF)
+option(BUILD_TESTING "Enable building of tests" ON)
 
 # compiler flags
 set(CMAKE_CXX_STANDARD 17)
