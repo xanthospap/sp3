@@ -89,7 +89,7 @@ int dso::Sp3c::read_header() noexcept {
   dso::nanoseconds sw;
   auto gwk1 = start_epoch__.gps_wsow(sw);
   if ((gwk1.as_underlying_type() != gwk) ||
-      (std::abs(dso::to_fractional_seconds(sw).seconds() - sec) > 1e-12)) {
+      (std::abs(dso::to_fractional_seconds(sw).seconds() - sec) > 1e-9)) {
     fprintf(stderr, "[ERROR] Failed to validate start date (traceback: %s)\n",
             __func__);
     fprintf(stderr,
@@ -133,7 +133,7 @@ int dso::Sp3c::read_header() noexcept {
   while (csat < num_sats__) {
     sat_vec__.emplace_back(line + cidx);
     cidx += 3;
-    if (cidx > 60 && csat + 1 < num_sats__) {
+    if (cidx >= 60 && csat < num_sats__) {
       __istream.getline(line, MAX_HEADER_CHARS);
       cidx = 9;
       ++lines_read;
@@ -150,8 +150,10 @@ int dso::Sp3c::read_header() noexcept {
   // ' Error code [40,50]
   // ------------------------------------------------------------
   __istream.getline(line, MAX_HEADER_CHARS);
-  if (*line != '+' || line[1] != '+')
+  if (*line != '+' || line[1] != '+') {
+    fprintf(stderr, "[ERROR] Expected sat. accuracy line, starting with \'++\'; found line \'%s\' (traceback: %s)\n", line, __func__);
     return 40;
+  }
   while (++dummy_it < MAX_HEADER_LINES && !std::strncmp(line, "++", 2)) {
     __istream.getline(line, MAX_HEADER_CHARS);
     char c = __istream.peek();

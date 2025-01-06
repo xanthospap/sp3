@@ -33,6 +33,26 @@ struct SatelliteId {
       set_id(str);
   }
 
+  /* copy constructor */
+  SatelliteId(const SatelliteId& s) noexcept { this->set_id(s.id); }
+  
+  /* move constructor */
+  SatelliteId(SatelliteId&& s) noexcept { this->set_id(s.id); }
+
+  /* assignment operator */
+  SatelliteId& operator=(const SatelliteId& s) noexcept {
+    if (this != &s)
+      this->set_id(s.id);
+    return *this;
+  }
+  
+  /* move assignment operator */
+  SatelliteId& operator=(SatelliteId&& s) noexcept {
+    if (this != &s)
+      this->set_id(s.id);
+    return *this;
+  }
+
   /** @brief Set id from a c-string. 
    * This will only copy the first SAT_ID_CHARS (from the input string) to 
    * the instance's id
