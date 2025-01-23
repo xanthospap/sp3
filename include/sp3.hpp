@@ -63,6 +63,9 @@ public:
   /** Rewind to the start of data blocks (i.e. just after the header) */
   void rewind() noexcept { __istream.seekg(__end_of_head, std::ios::beg); }
 
+  /** @brief Time System/Scale as string (as reported in the Sp3). */
+  const char *time_sys() const noexcept { return time_sys__;}
+
   /** @brief Read the next data block and parse holding for a given SV
    * @param[in] satid The SV to collect records for
    * @param[out] block An Sp3DataBlock instance; if we encounter records
